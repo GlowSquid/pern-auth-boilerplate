@@ -1,0 +1,6 @@
+docker-compose.yml
+node_modules/
+server/config/
+.env*
+package-lock.json
+npm-debug.log*
