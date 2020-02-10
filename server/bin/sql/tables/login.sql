@@ -1,0 +1,8 @@
+BEGIN TRANSACTION;
+CREATE TABLE login (
+  id serial PRIMARY KEY,
+  hash VARCHAR(100) NOT NULL, -- CHARACTER(64)
+  email text UNIQUE NOT NULL,
+  last_login TIMESTAMP
+);
+COMMIT;
