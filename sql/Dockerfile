@@ -1,4 +1,4 @@
-FROM postgres:12.1
+FROM postgres:latest
 
 ADD /tables/ /docker-entrypoint-initdb.d/tables/
 ADD /_seed/ /docker-entrypoint-initdb.d/_seed/

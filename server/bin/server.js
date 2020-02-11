@@ -11,6 +11,7 @@ const db = knex({
   client: "pg",
   connection: process.env.POSTGRES_URI
 });
+
 // host: process.env.POSTGRES_HOST || "localhost",
 // user: process.env.POSTGRES_USER || "postgres",
 // password: process.env.POSTGRES_PASSWORD || "postgres",
@@ -19,15 +20,18 @@ const db = knex({
 
 // const pool = new pg.Pool(config);
 
+const authRoute = require("../routes/authRoute");
 dotenv.config({ path: "./config/config.env" });
 
 const app = express();
-app.use(express.json());
+app.use(express.json()); // bodyparser
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+
+app.use("/api/v1/auth", authRoute);
 
 app.get("/", (req, res) => {
   res.send("hello world");
