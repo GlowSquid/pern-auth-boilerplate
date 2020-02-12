@@ -1,24 +1,10 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const knex = require("knex");
 const morgan = require("morgan");
 const colors = require("colors");
 const cors = require("cors");
 
 const PORT = parseInt(process.env.PORT, 10) || 5000;
-
-const db = knex({
-  client: "pg",
-  connection: process.env.POSTGRES_URI
-});
-
-// host: process.env.POSTGRES_HOST || "localhost",
-// user: process.env.POSTGRES_USER || "postgres",
-// password: process.env.POSTGRES_PASSWORD || "postgres",
-// database: process.env.POSTGRES_DB || "auther",
-// port: 5432
-
-// const pool = new pg.Pool(config);
 
 const authRoute = require("../routes/authRoute");
 dotenv.config({ path: "./config/config.env" });
