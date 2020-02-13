@@ -2,6 +2,7 @@ const pool = require("../config/dbConfig");
 const asyncHandler = require("../middleware/async");
 const errorResponse = require("../utils/errorResponse");
 const bcrypt = require("bcryptjs");
+const uuid = require("uuid/v4");
 
 // @desc    Register User
 // @route   POST /api/v1/auth/register
@@ -34,8 +35,8 @@ exports.register = asyncHandler(async (req, res, next) => {
           const created = new Date();
           const role = "user";
           client.query(
-            `INSERT INTO account (email, password_hash, role, created) VALUES ($1, $2, $3, $4)`,
-            [email, password_hash, role, created],
+            `INSERT INTO account (id, email, password_hash, role, created) VALUES ($1, $2, $3, $4, $5)`,
+            [uuid(), email, password_hash, role, created],
             function(err, result) {
               if (err) {
                 console.log(err);
@@ -60,4 +61,52 @@ exports.register = asyncHandler(async (req, res, next) => {
 // @desc    Login User
 // @route   POST /api/v1/auth/login
 // @access  Public
-exports.login = asyncHandler(async (req, res, next) => {});
+exports.login = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return next(new errorResponse("Please provide an email and password", 400));
+  }
+  try {
+    const client = await pool.connect();
+    await client.query("BEGIN");
+
+    await JSON.stringify(
+      client.query(
+        `SELECT id, email, password_hash FROM account WHERE email = $1`,
+        [email],
+        function(err, result) {
+          if (err) {
+            console.log("ERR", err);
+          }
+          console.log("email is", email);
+          console.log("password is", password);
+          console.log("hash is", result.rows[0].password_hash);
+          if (result.rows[0] == null) {
+            return next(new errorResponse("Wrong email or password", 401));
+          } else {
+            bcrypt.compare(password, result.rows[0].password_hash, function(
+              err,
+              check
+            ) {
+              if (err) {
+                return next(
+                  new errorResponse("There was an error logging in", 401)
+                );
+              } else if (check) {
+                res.status(200).json({
+                  success: true,
+                  data: email
+                });
+              } else {
+                return next(new errorResponse("Wrong email or password", 401));
+              }
+            });
+          }
+        }
+      )
+    );
+  } catch (err) {
+    console.log(err);
+  }
+});

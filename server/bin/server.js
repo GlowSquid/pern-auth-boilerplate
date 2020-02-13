@@ -26,7 +26,9 @@ app.get("/", (req, res) => {
 const server = app.listen(PORT, err => {
   if (err) throw err;
   // console.log(`> App on ${process.env.NODE_ENV} :${PORT}`.yellow.bold);
-  console.log(`> App on ${process.env.NODE_ENV}`.blue + `:${PORT}`.yellow.bold);
+  console.log(
+    "> App on " + `${process.env.NODE_ENV}`.blue + `:${PORT}`.yellow.bold
+  );
 });
 
 process.on("unhandledRejection", (err, promise) => {
