@@ -1,8 +1,16 @@
 const pool = require("../config/dbConfig");
 const asyncHandler = require("../middleware/async");
 const errorResponse = require("../utils/errorResponse");
+const redis = require("redis");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const uuid = require("uuid/v4");
+
+exports.redisClient = redis.createClient(process.env.REDIS_URI);
+
+this.redisClient.on("connect", function() {
+  console.log("Redis online");
+});
 
 // @desc    Register User
 // @route   POST /api/v1/auth/register
@@ -34,19 +42,16 @@ exports.register = asyncHandler(async (req, res, next) => {
           console.log("ok");
           const created = new Date();
           const role = "user";
+          const id = uuid();
           client.query(
             `INSERT INTO account (id, email, password_hash, role, created) VALUES ($1, $2, $3, $4, $5)`,
-            [uuid(), email, password_hash, role, created],
+            [id, email, password_hash, role, created],
             function(err, result) {
               if (err) {
                 console.log(err);
               } else {
                 client.query("COMMIT");
-                // console.log(result);
-                res.status(200).json({
-                  success: true,
-                  data: email
-                });
+                setSession(id, email, 200, res);
               }
             }
           );
@@ -79,9 +84,6 @@ exports.login = asyncHandler(async (req, res, next) => {
           if (err) {
             console.log("ERR", err);
           }
-          console.log("email is", email);
-          console.log("password is", password);
-          console.log("hash is", result.rows[0].password_hash);
           if (result.rows[0] == null) {
             return next(new errorResponse("Wrong email or password", 401));
           } else {
@@ -94,10 +96,8 @@ exports.login = asyncHandler(async (req, res, next) => {
                   new errorResponse("There was an error logging in", 401)
                 );
               } else if (check) {
-                res.status(200).json({
-                  success: true,
-                  data: email
-                });
+                const id = result.rows[0].id;
+                setSession(id, email, 200, res);
               } else {
                 return next(new errorResponse("Wrong email or password", 401));
               }
@@ -110,3 +110,35 @@ exports.login = asyncHandler(async (req, res, next) => {
     console.log(err);
   }
 });
+
+const setToken = (key, value) => Promise.resolve(redisClient.set(key, value));
+
+const getSignedToken = email => {
+  const payload = { email };
+  return jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE
+  });
+};
+
+const setSession = (id, email, statusCode, res) => {
+  const token = getSignedToken(email);
+  setToken(token, id);
+  const options = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true
+  };
+
+  if (process.env.NODE_ENV === "production") {
+    options.secure = true;
+  }
+
+  res
+    .status(statusCode)
+    .cookie("token", token, options)
+    .json({
+      success: true,
+      token
+    });
+};
