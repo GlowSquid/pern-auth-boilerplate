@@ -122,7 +122,7 @@ const getSignedToken = email => {
 
 const setSession = (id, email, statusCode, res) => {
   const token = getSignedToken(email);
-  setToken(token, id);
+  // setToken(token, id);
   const options = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000

@@ -1,0 +1,27 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next src -p 5001",
+    "build": "next build src",
+    "start": "next start src -p 5001"
+  },
+  "author": "GlowSquid",
+  "license": "MIT",
+  "dependencies": {
+    "@zeit/next-css": "^1.0.1",
+    "axios": "^0.19.2",
+    "js-cookie": "^2.2.1",
+    "next": "^9.2.1",
+    "next-cookies": "^2.0.3",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-plugin-react": "^7.18.3"
+  }
+}

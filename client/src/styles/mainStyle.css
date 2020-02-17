@@ -1,0 +1,118 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: "Titillium Web", sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #eee;
+  background-color: rgb(0, 41, 19);
+}
+
+.container {
+  background-color: #302c6e;
+  margin: 20%;
+  padding: 1rem;
+  border: 2px solid rgb(23, 23, 23);
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-top-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+}
+
+.split {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.login-form,
+.signup-form {
+  /* display: block; */
+  width: 48%;
+  background-color: rgb(0, 41, 19);
+  border: 1px solid transparent;
+  border-top-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.form {
+  display: block;
+  justify-content: center;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.form-title {
+  text-align: center;
+}
+
+input {
+  width: 100%;
+  margin-bottom: 1rem;
+  background-color: #9e9ad8;
+  border: 1px solid transparent;
+  border-top-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  padding: 0.5rem;
+  padding-left: 1rem;
+  outline: none;
+  text-align: center;
+  height: 40px;
+  font-size: 1.2em;
+  font-family: "Oxygen Mono", monospace;
+}
+input:focus {
+  background-color: #99aff8;
+}
+input:focus::placeholder {
+  color: transparent;
+}
+input::placeholder {
+  font-size: 1.2em;
+  text-align: center;
+}
+
+.btn {
+  display: block;
+  padding: 0.5rem;
+  width: 100%;
+  border: 1px solid transparent;
+  border-top-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  margin-bottom: 2rem;
+  margin-top: 1.2rem;
+  cursor: pointer;
+}
+
+.btn-login {
+  background-color: #8ca2ec;
+}
+.btn-login:hover {
+  background-color: #99aff8;
+}
+
+.btn-signup {
+  background-color: green;
+}
