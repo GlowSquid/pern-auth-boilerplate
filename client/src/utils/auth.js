@@ -1,6 +1,7 @@
 import Router from "next/router";
 import nextCookie from "next-cookies";
 import cookie from "js-cookie";
+import axios from "axios";
 
 export const login = ({ token }) => {
   cookie.set("token", token, { expires: 30 });
@@ -20,4 +21,10 @@ export const auth = ctx => {
   }
 
   return token;
+};
+
+export const logout = () => {
+  axios.get("http://localhost:5000/api/v1/auth/logout");
+  cookie.remove("token");
+  Router.push("/");
 };

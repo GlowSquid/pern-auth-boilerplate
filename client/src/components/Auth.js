@@ -9,6 +9,8 @@ const Auth = ({ user }) => {
     password: user.password || ""
   });
 
+  const [showLogin, setShowLogin] = useState(false);
+
   const { email, password } = formData;
 
   const onChange = e => {
@@ -22,6 +24,14 @@ const Auth = ({ user }) => {
     e.preventDefault();
 
     try {
+      let endpoint;
+
+      if (!showLogin) {
+        endpoint = "register";
+      } else {
+        endpoint = "login";
+      }
+
       const config = {
         headers: {
           "Content-Type": "application/json"
@@ -29,12 +39,11 @@ const Auth = ({ user }) => {
       };
 
       const res = await axios.post(
-        "http://localhost:5000/api/v1/auth/login",
+        `http://localhost:5000/api/v1/auth/${endpoint}`,
         formData,
         config
       );
       console.log(res.data);
-      // console.log("res.data.token", res.data.token);
 
       if (res.status === 200) {
         const token = res.data.token;
@@ -53,10 +62,22 @@ const Auth = ({ user }) => {
   return (
     <div className="container">
       <div className="split">
-        <div className="signup-form">Sign Up</div>
-        <div className="login-form">Login</div>
+        <div
+          onClick={() => setShowLogin(false)}
+          className={showLogin ? "signup" : "signup signup-active"}
+        >
+          Sign Up
+        </div>
+        <div
+          onClick={() => setShowLogin(true)}
+          className={showLogin ? "login login-active" : "login"}
+        >
+          Login
+        </div>
       </div>
-      <h1 className="form-title">Log in existing user</h1>
+      <h1 className="form-title">
+        {showLogin ? "Log in existing user" : "Sign up for free"}
+      </h1>
       <form className="form" onSubmit={e => handleSubmit(e)}>
         <input
           type="email"
@@ -75,9 +96,11 @@ const Auth = ({ user }) => {
           onChange={e => onChange(e)}
         />
 
-        <button className="btn btn-login" type="submit">
-          Login
-        </button>
+        <input
+          type="submit"
+          className={showLogin ? "btn btn-login" : "btn btn-signup"}
+          value={showLogin ? "Login" : "Register"}
+        />
       </form>
     </div>
   );
