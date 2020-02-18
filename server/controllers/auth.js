@@ -23,8 +23,8 @@ exports.register = asyncHandler(async (req, res, next) => {
   const salt = await bcrypt.genSalt(11);
   const password_hash = await bcrypt.hash(password, salt);
 
+  const client = await pool.connect();
   try {
-    const client = await pool.connect();
     await client.query("BEGIN");
 
     await JSON.stringify(
@@ -51,7 +51,7 @@ exports.register = asyncHandler(async (req, res, next) => {
                 console.log(err);
               } else {
                 client.query("COMMIT");
-                setSession(id, email, 200, res);
+                setSession(id, 200, res);
               }
             }
           );
@@ -59,7 +59,15 @@ exports.register = asyncHandler(async (req, res, next) => {
       })
     );
   } catch (err) {
+    try {
+      await client.query("ROLLBACK");
+    } catch (rollbackErr) {
+      console.log("rollbackErr", rollbackErr);
+    }
     console.log(err);
+  } finally {
+    client.release();
+    console.log("closing");
   }
 });
 
@@ -72,8 +80,8 @@ exports.login = asyncHandler(async (req, res, next) => {
   if (!email || !password) {
     return next(new errorResponse("Please provide an email and password", 400));
   }
+  const client = await pool.connect();
   try {
-    const client = await pool.connect();
     await client.query("BEGIN");
 
     await JSON.stringify(
@@ -97,7 +105,7 @@ exports.login = asyncHandler(async (req, res, next) => {
                 );
               } else if (check) {
                 const id = result.rows[0].id;
-                setSession(id, email, 200, res);
+                setSession(id, 200, res);
               } else {
                 return next(new errorResponse("Wrong email or password", 401));
               }
@@ -108,21 +116,25 @@ exports.login = asyncHandler(async (req, res, next) => {
     );
   } catch (err) {
     console.log(err);
+  } finally {
+    client.release();
+    console.log("closing");
   }
 });
 
-const setToken = (key, value) => Promise.resolve(redisClient.set(key, value));
+const setToken = (key, value) =>
+  Promise.resolve(this.redisClient.set(key, value));
 
-const getSignedToken = email => {
-  const payload = { email };
+const getSignedToken = id => {
+  const payload = { id };
   return jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE
   });
 };
 
-const setSession = (id, email, statusCode, res) => {
-  const token = getSignedToken(email);
-  // setToken(token, id);
+const setSession = (id, statusCode, res) => {
+  const token = getSignedToken(id);
+  setToken(token, id);
   const options = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
@@ -139,6 +151,31 @@ const setSession = (id, email, statusCode, res) => {
     .cookie("token", token, options)
     .json({
       success: true,
-      token
+      token,
+      id
     });
 };
+
+// @desc    Get current logged in user
+// @route   GET /api/v1/auth/me
+// @access  Private Æ
+exports.getMe = asyncHandler(async (req, res, next) => {
+  const client = await pool.connect();
+  await client.query("BEGIN");
+
+  await client.query(
+    "SELECT id, email, role, created FROM account WHERE id = $1",
+    [req.account.id],
+    function(err, result) {
+      if (err) {
+        console.log("err", err);
+      }
+      if (result.rows[0]) {
+        // console.log("result.rows[0]", result.rows[0]);
+        res.status(200).json({ success: true, data: result.rows[0] });
+      } else {
+        console.log("Something went wrong");
+      }
+    }
+  );
+});

@@ -34,9 +34,10 @@ const Auth = ({ user }) => {
         config
       );
       console.log(res.data);
+      // console.log("res.data.token", res.data.token);
 
       if (res.status === 200) {
-        const { token } = res.data.token;
+        const token = res.data.token;
         await login({ token });
       } else {
         console.log("fail");
