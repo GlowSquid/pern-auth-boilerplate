@@ -146,3 +146,10 @@ input::placeholder {
 .btn-delete:hover {
   background-color: #ff5c5c;
 }
+
+.error {
+  font-size: 1.3rem;
+  text-align: center;
+  color: #fc4c4c;
+  background-color: rgba(0, 0, 0, 0.5);
+}

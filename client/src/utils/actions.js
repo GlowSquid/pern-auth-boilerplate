@@ -27,3 +27,31 @@ export const logout = () => {
   cookie.remove("token");
   Router.push("/");
 };
+
+export const deleteAccount = async token => {
+  console.log("token del", token);
+  logout();
+  await axios.delete("http://localhost:5000/api/v1/auth/delete", {
+    headers: {
+      authorization: `Bearer ${token}`,
+      contentType: "application/json"
+    }
+  });
+};
+
+export const catchErrors = (error, showError) => {
+  let err;
+  if (error.response) {
+    err = error.response.data.error;
+    console.log("err response", err);
+  } else if (error.request) {
+    err = error.request;
+    console.log("err request", err);
+  } else {
+    err = error.message;
+    console.log("err message", err);
+  }
+  showError(err);
+};
+
+export default catchErrors;

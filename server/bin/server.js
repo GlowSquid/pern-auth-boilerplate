@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const logger = require("morgan");
 const colors = require("colors");
+const errorHandler = require("../middleware/error");
 const cors = require("cors");
 
 const PORT = parseInt(process.env.PORT, 10) || 5000;
@@ -19,6 +20,8 @@ if (process.env.NODE_ENV === "development") {
 
 app.use("/api/v1/auth", authRoute);
 
+app.use(errorHandler);
+
 const server = app.listen(PORT, err => {
   if (err) throw err;
   // console.log(`> App on ${process.env.NODE_ENV} :${PORT}`.yellow.bold);
@@ -27,7 +30,11 @@ const server = app.listen(PORT, err => {
   );
 });
 
-process.on("unhandledRejection", (err, promise) => {
-  console.log(`Error log: ${err.message}`.red.underline.bold);
+process.on("unhandledRejection", err => {
+  console.log(`💥 ${err.name}: ${err.message}`.red.underline.bold);
   server.close(() => process.exit(1));
+});
+
+process.on("SIGTERM", () => {
+  server.close();
 });

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { auth, logout } from "../utils/actions";
+import { auth, logout, deleteAccount } from "../utils/actions";
 
 import MainLayout from "../components/_App/MainLayout";
 
 const Profile = ({ token }) => {
   const [user, setUser] = useState("Loading");
   const [loading, setLoading] = useState(true);
-  console.log(user);
+  // console.log(user);
   useEffect(() => {
     const fetchUser = async () => {
       const res = await axios.get("http://localhost:5000/api/v1/auth/me", {
@@ -51,7 +51,12 @@ const Profile = ({ token }) => {
           <button className="btn btn-login" onClick={logout}>
             Log out
           </button>
-          <button className="btn btn-delete">Delete Account</button>
+          <button
+            className="btn btn-delete"
+            onClick={() => deleteAccount(token)}
+          >
+            Delete Account
+          </button>
         </div>
       )) || <div className="container">Loading..</div>}
     </MainLayout>

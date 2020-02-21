@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-import { login } from "../utils/actions";
+import { login, catchErrors } from "../utils/actions";
 
 const Auth = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +10,7 @@ const Auth = () => {
   });
 
   const [showLogin, setShowLogin] = useState(false);
+  const [error, setError] = React.useState(false);
 
   const { email, password } = formData;
 
@@ -31,6 +32,7 @@ const Auth = () => {
       } else {
         endpoint = "login";
       }
+      setError(false);
 
       const config = {
         headers: {
@@ -43,7 +45,7 @@ const Auth = () => {
         formData,
         config
       );
-      console.log(res.data);
+      // console.log(res.data);
 
       if (res.status === 200) {
         const token = res.data.token;
@@ -51,11 +53,10 @@ const Auth = () => {
       } else {
         console.log("fail");
       }
-    } catch (err) {
-      console.log(err);
-      // catchErrors;
+    } catch (error) {
+      // console.log("err.response.data.error", err.response.data.error);
+      catchErrors(error, setError);
     } finally {
-      // setLoading(false);
     }
   };
 
@@ -75,9 +76,11 @@ const Auth = () => {
           Login
         </div>
       </div>
+
       <h1 className="form-title">
         {showLogin ? "Log in existing user" : "Sign up for free"}
       </h1>
+
       <form className="form" onSubmit={e => handleSubmit(e)}>
         <input
           type="email"
@@ -95,6 +98,8 @@ const Auth = () => {
           value={password}
           onChange={e => onChange(e)}
         />
+
+        {error ? <div className="error">{error}</div> : null}
 
         <input
           type="submit"
