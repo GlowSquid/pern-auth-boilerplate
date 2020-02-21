@@ -1,6 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const morgan = require("morgan");
+const logger = require("morgan");
 const colors = require("colors");
 const cors = require("cors");
 
@@ -14,23 +14,10 @@ app.use(express.json()); // bodyparser
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 
 if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
+  app.use(logger("dev"));
 }
 
 app.use("/api/v1/auth", authRoute);
-
-// app.get("/", (req, res) => {
-//   res.send("hello world");
-// });
-
-// app.use(function(req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept"
-//   );
-//   next();
-// });
 
 const server = app.listen(PORT, err => {
   if (err) throw err;

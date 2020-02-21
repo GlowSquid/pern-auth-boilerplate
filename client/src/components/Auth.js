@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-import { login } from "../utils/auth";
+import { login } from "../utils/actions";
 
-const Auth = ({ user }) => {
+const Auth = () => {
   const [formData, setFormData] = useState({
-    email: user.email || "",
-    password: user.password || ""
+    email: "",
+    password: ""
   });
 
   const [showLogin, setShowLogin] = useState(false);

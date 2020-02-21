@@ -7,7 +7,7 @@ const Index = () => {
   return (
     <MainLayout title="Home">
       <div className="frame overview">
-        <Auth user={"user"} />
+        <Auth />
       </div>
     </MainLayout>
   );

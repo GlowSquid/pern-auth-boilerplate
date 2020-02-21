@@ -8,7 +8,7 @@ const uuid = require("uuid/v4");
 
 exports.redisClient = redis.createClient(process.env.REDIS_URI);
 
-this.redisClient.on("connect", function() {
+this.redisClient.on("connect", () => {
   console.log("Redis online");
 });
 
@@ -23,15 +23,11 @@ exports.register = asyncHandler(async (req, res, next) => {
   const salt = await bcrypt.genSalt(11);
   const password_hash = await bcrypt.hash(password, salt);
 
-  const client = await pool.connect();
   try {
-    await client.query("BEGIN");
-
-    await JSON.stringify(
-      client.query("SELECT id FROM account WHERE email = $1", [email], function(
-        err,
-        result
-      ) {
+    pool.query(
+      "SELECT id FROM account WHERE email = $1",
+      [email],
+      (err, result) => {
         if (err) {
           console.log(err);
         }
@@ -43,31 +39,28 @@ exports.register = asyncHandler(async (req, res, next) => {
           const created = new Date();
           const role = "user";
           const id = uuid();
-          client.query(
+          pool.query(
             `INSERT INTO account (id, email, password_hash, role, created) VALUES ($1, $2, $3, $4, $5)`,
             [id, email, password_hash, role, created],
-            function(err, result) {
+            (err, result) => {
               if (err) {
                 console.log(err);
               } else {
-                client.query("COMMIT");
+                pool.query("COMMIT");
                 setSession(id, 200, res);
               }
             }
           );
         }
-      })
+      }
     );
   } catch (err) {
     try {
-      await client.query("ROLLBACK");
+      await pool.query("ROLLBACK");
     } catch (rollbackErr) {
       console.log("rollbackErr", rollbackErr);
     }
     console.log(err);
-  } finally {
-    client.release();
-    console.log("closing");
   }
 });
 
@@ -80,25 +73,21 @@ exports.login = asyncHandler(async (req, res, next) => {
   if (!email || !password) {
     return next(new errorResponse("Please provide an email and password", 400));
   }
-  const client = await pool.connect();
   try {
-    await client.query("BEGIN");
-
-    await JSON.stringify(
-      client.query(
-        `SELECT id, email, password_hash FROM account WHERE email = $1`,
-        [email],
-        function(err, result) {
-          if (err) {
-            console.log("ERR", err);
-          }
-          if (result.rows[0] == null) {
-            return next(new errorResponse("Wrong email or password", 401));
-          } else {
-            bcrypt.compare(password, result.rows[0].password_hash, function(
-              err,
-              check
-            ) {
+    pool.query(
+      `SELECT id, email, password_hash FROM account WHERE email = $1`,
+      [email],
+      (err, result) => {
+        if (err) {
+          console.log("ERR", err);
+        }
+        if (result.rows[0] == null) {
+          return next(new errorResponse("Wrong email or password", 401));
+        } else {
+          bcrypt.compare(
+            password,
+            result.rows[0].password_hash,
+            (err, check) => {
               if (err) {
                 return next(
                   new errorResponse("There was an error logging in", 401)
@@ -109,16 +98,13 @@ exports.login = asyncHandler(async (req, res, next) => {
               } else {
                 return next(new errorResponse("Wrong email or password", 401));
               }
-            });
-          }
+            }
+          );
         }
-      )
+      }
     );
   } catch (err) {
     console.log(err);
-  } finally {
-    client.release();
-    console.log("closing");
   }
 });
 
@@ -160,22 +146,14 @@ const setSession = (id, statusCode, res) => {
 // @route   GET /api/v1/auth/me
 // @access  Private
 exports.getMe = asyncHandler(async (req, res, next) => {
-  const client = await pool.connect();
-  await client.query("BEGIN");
-
-  await client.query(
+  pool.query(
     "SELECT id, email, role, created FROM account WHERE id = $1",
     [req.account.id],
-    function(err, result) {
+    (err, result) => {
       if (err) {
         console.log("err", err);
       }
-      if (result.rows[0]) {
-        // console.log("result.rows[0]", result.rows[0]);
-        res.status(200).json({ success: true, data: result.rows[0] });
-      } else {
-        console.log("Something went wrong");
-      }
+      res.status(200).json({ success: true, data: result.rows[0] });
     }
   );
 });
@@ -193,4 +171,34 @@ exports.logout = asyncHandler(async (req, res, next) => {
     success: true,
     data: {}
   });
+});
+
+// @desc    Remove User
+// @route   DEL /api/v1/auth/delete
+// @access  Private
+exports.drop = asyncHandler(async (req, res, next) => {
+  // logout
+  if (req.account) {
+    console.log("req", req.account);
+    try {
+      pool.query(
+        "DELETE FROM account WHERE id = $1",
+        [req.account.id],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+            res.status(200).json({
+              success: true,
+              data: {}
+            });
+          }
+        }
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  } else {
+    return next(new errorResponse("No ID", 404));
+  }
 });

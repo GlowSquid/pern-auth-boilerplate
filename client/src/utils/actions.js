@@ -1,7 +1,7 @@
 import Router from "next/router";
 import nextCookie from "next-cookies";
-import cookie from "js-cookie";
 import axios from "axios";
+import cookie from "js-cookie";
 
 export const login = ({ token }) => {
   cookie.set("token", token, { expires: 30 });
@@ -19,7 +19,6 @@ export const auth = ctx => {
       Router.push("/");
     }
   }
-
   return token;
 };
 
