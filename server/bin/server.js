@@ -4,6 +4,8 @@ const logger = require("morgan");
 const colors = require("colors");
 const errorHandler = require("../middleware/error");
 const cors = require("cors");
+const xssClean = require("xss-clean");
+const helmet = require("helmet");
 
 const PORT = parseInt(process.env.PORT, 10) || 5000;
 
@@ -13,6 +15,8 @@ dotenv.config({ path: "./config/config.env" });
 const app = express();
 app.use(express.json()); // bodyparser
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+app.use(xssClean());
+app.use(helmet());
 
 if (process.env.NODE_ENV === "development") {
   app.use(logger("dev"));

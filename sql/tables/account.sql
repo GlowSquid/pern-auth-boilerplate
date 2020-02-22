@@ -1,8 +1,8 @@
 BEGIN TRANSACTION;
 CREATE TABLE account (
-  id UUID NOT NULL,  -- id serial PRIMARY KEY,
+  id UUID NOT NULL,
   email text UNIQUE NOT NULL,
-  password_hash VARCHAR(100) NOT NULL, -- CHARACTER(64) 61?
+  password_hash VARCHAR(255) NOT NULL,
   role text NOT NULL,
   created TIMESTAMP NOT NULL
 );

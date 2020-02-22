@@ -1,7 +1,6 @@
 docker-compose.yml
 node_modules/
 .next/
-server/config/
-.env*
+server/config/config.env
 package-lock.json
 npm-debug.log*

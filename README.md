@@ -1,5 +1,3 @@
 # Auth Boilerplate
 
-### Work in Progress!
-
-Node-Express-Postgres-Redis-Next authentication with Docker
+Node-Express-Postgres-Redis-React(Next) user authentication with Docker

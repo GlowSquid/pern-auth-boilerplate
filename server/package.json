@@ -17,11 +17,14 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-validator": "^6.4.0",
+    "helmet": "^3.21.2",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.9.1",
     "pg": "^7.18.1",
     "redis": "^3.0.2",
-    "uuid": "^3.4.0"
+    "uuid": "^3.4.0",
+    "xss-clean": "^0.1.1"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
