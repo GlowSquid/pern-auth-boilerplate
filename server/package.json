@@ -11,7 +11,6 @@
   "author": "GlowSquid",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "colors": "^1.4.0",
     "cors": "^2.8.5",
@@ -22,7 +21,6 @@
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.9.1",
     "pg": "^7.18.1",
-    "redis": "^3.0.2",
     "uuid": "^3.4.0",
     "xss-clean": "^0.1.1"
   },

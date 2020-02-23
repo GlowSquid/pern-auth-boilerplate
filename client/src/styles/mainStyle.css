@@ -3,6 +3,7 @@
 }
 
 html {
+  height: 100%;
   font-family: "Titillium Web", sans-serif;
   font-weight: normal;
   font-style: normal;
@@ -15,12 +16,15 @@ html {
 
 body {
   position: relative;
+  min-height: 90%;
+  padding-bottom: [footer-height];
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #eee;
   background-color: #002129;
   word-wrap: break-word;
+  padding-top: 4rem;
 }
 
 .container {
@@ -29,7 +33,7 @@ body {
   width: 400px;
   margin: 0 auto;
   padding: 1rem;
-  margin-top: 4rem;
+
   border: 2px solid rgb(23, 23, 23);
   border-top-right-radius: 10px;
   border-bottom-left-radius: 10px;
@@ -152,4 +156,27 @@ input::placeholder {
   text-align: center;
   color: #fc4c4c;
   background-color: rgba(0, 0, 0, 0.5);
+}
+
+.footer {
+  height: [footer-height];
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  background-color: #333061;
+  color: #eee;
+  margin: 0 auto;
+  width: 400px;
+  border: 2px solid rgb(23, 23, 23);
+  border-top-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-top-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.5);
+}
+.footer a {
+  cursor: pointer;
+  color: #eee;
 }

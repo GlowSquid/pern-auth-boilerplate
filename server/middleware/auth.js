@@ -2,19 +2,6 @@ const jwt = require("jsonwebtoken");
 const pool = require("../config/dbConfig");
 const asyncHandler = require("./async");
 const errorResponse = require("../utils/errorResponse");
-const { redisClient } = require("../controllers/auth");
-
-exports.getAuth = asyncHandler(async (req, res, next) => {
-  const { authorization } = req.headers;
-  console.log(authorization);
-  return redisClient.get(authorization, (err, reply) => {
-    if (err || !reply) {
-      console.log(err);
-      return res.status(401).send("Unauthorized");
-    }
-    return res.json({ id: reply });
-  });
-});
 
 exports.protect = asyncHandler(async (req, res, next) => {
   let token;

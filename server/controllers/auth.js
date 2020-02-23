@@ -1,16 +1,9 @@
 const pool = require("../config/dbConfig");
 const asyncHandler = require("../middleware/async");
 const errorResponse = require("../utils/errorResponse");
-const redis = require("redis");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const uuid = require("uuid/v4");
-
-exports.redisClient = redis.createClient(process.env.REDIS_URI);
-
-this.redisClient.on("connect", () => {
-  console.log("Redis online");
-});
 
 // @desc    Register User
 // @route   POST /api/v1/auth/register
@@ -108,9 +101,6 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
 });
 
-const setToken = (key, value) =>
-  Promise.resolve(this.redisClient.set(key, value));
-
 const getSignedToken = id => {
   const payload = { id };
   return jwt.sign(payload, process.env.JWT_SECRET, {
@@ -120,7 +110,6 @@ const getSignedToken = id => {
 
 const setSession = (id, statusCode, res) => {
   const token = getSignedToken(id);
-  setToken(token, id);
   const options = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000

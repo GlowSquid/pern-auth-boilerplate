@@ -1,5 +1,6 @@
 import Head from "next/head";
 import HeadContent from "./HeadContent";
+import Footer from "../Footer";
 
 import "../../styles/mainStyle.css";
 
@@ -14,6 +15,7 @@ const MainLayout = ({ children, title, user }) => (
       <title>{title}</title>
     </Head>
     <div>{children}</div>
+    <Footer />
   </>
 );
 

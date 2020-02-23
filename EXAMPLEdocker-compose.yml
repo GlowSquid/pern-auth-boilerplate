@@ -13,13 +13,6 @@ services:
     ports:
       - "5433:5432"
 
-  # Redis
-  redis:
-    container_name: redis
-    image: redis
-    ports:
-      - "6379:6379"
-
   # Backend
   auther:
     container_name: backend
@@ -29,7 +22,6 @@ services:
     environment:
       DEBUG_COLORS: 1
       POSTGRES_URI: postgres://<user>:<password>@postgres:5432/<db>
-      REDIS_URI: redis://redis:6379
     ports:
       - "5000:5000"
     volumes:
